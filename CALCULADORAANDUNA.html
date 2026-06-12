@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Sueldo Nodocente - Junio 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen py-10 px-4">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-blue-700 text-white p-6 text-center">
+            <h1 class="text-2xl font-bold tracking-wide">Simulador de Sueldo Nodocente</h1>
+            <p class="text-sm opacity-90 mt-1">Grilla Salarial Junio 2026 - FATUN</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Categoría</label>
+                    <select id="categoria" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="calcularSueldo()">
+                        <option value="1">Categoría 1</option>
+                        <option value="2">Categoría 2</option>
+                        <option value="3">Categoría 3</option>
+                        <option value="4">Categoría 4</option>
+                        <option value="5">Categoría 5</option>
+                        <option value="6">Categoría 6</option>
+                        <option value="7" selected>Categoría 7</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Años de Antigüedad</label>
+                    <input type="number" id="antiguedad" min="0" max="45" value="0" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" oninput="calcularSueldo()">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Adicional por Título</label>
+                    <select id="titulo" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="calcularSueldo()">
+                        <option value="ninguno">Ninguno</option>
+                        <option value="secundario">Título Secundario</option>
+                        <option value="terciario">Terciario o Pregrado</option>
+                        <option value="tecnicatura">Tecnicatura Gestión Univ.</option>
+                        <option value="universitario">Título Universitario</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Permanencia en la Categoría</label>
+                    <select id="permanencia" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="calcularSueldo()">
+                        <option value="0">Sin permanencia</option>
+                        <option value="2">Permanencia 2 años</option>
+                        <option value="4">Permanencia 4 años</option>
+                        <option value="6">Permanencia 6 años</option>
+                        <option value="8">Permanencia 8 años</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl space-y-3">
+                <span class="block text-sm font-semibold text-gray-700 mb-1">Otros Adicionales y Descuentos</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="grado" class="rounded text-blue-600" onchange="calcularSueldo()">
+                        <span>Adicional Grado</span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="capacitacion" class="rounded text-blue-600" onchange="calcularSueldo()">
+                        <span>Adicional Capacitación</span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="sindicato" class="rounded text-blue-600" onchange="calcularSueldo()">
+                        <span>Aporte Sindical (2%)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-2.5">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Desglose del Sueldo Bruto</h3>
+                <div class="flex justify-between text-sm text-gray-600"><span>Sueldo Básico:</span><span id="lblBasico" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between text-sm text-gray-600"><span>Antigüedad:</span><span id="lblAntiguedad" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between text-sm text-gray-600"><span>Adicional por Título:</span><span id="lblTitulo" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between text-sm text-gray-600"><span>Permanencia:</span><span id="lblPermanencia" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between text-sm text-gray-600"><span>Adicional Grado:</span><span id="lblGrado" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between text-sm text-gray-600"><span>Adicional Capacitación:</span><span id="lblCapacitacion" class="font-semibold text-gray-800"></span></div>
+                <div id="divGarantia" class="flex justify-between text-sm font-bold bg-blue-50 text-blue-700 p-2 rounded-lg border border-blue-100">
+                    <span>Garantía Salarial (Automática):</span><span id="lblGarantia"></span>
+                </div>
+            </div>
+
+            <hr class="border-gray-200 my-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-gray-100 rounded-xl text-center">
+                    <span class="text-xs font-bold text-gray-500 uppercase block tracking-wider">Sueldo Bruto Total</span>
+                    <span id="resultadoBruto" class="text-2xl font-extrabold text-gray-800">$0,00</span>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl text-center border border-green-200">
+                    <span class="text-xs font-bold text-green-600 uppercase block tracking-wider">Sueldo Neto de Bolsillo</span>
+                    <span id="resultadoNeto" class="text-3xl font-black text-green-700">$0,00</span>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-500 space-y-1 pt-2">
+                <p>* El cálculo neto descuenta de forma obligatoria Jubilación (11%), Obra Social (3%) y Ley 19.032 (3%).</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dataGrilla = {
+            1: { basico: 2513777.64, secundario: 146637.05, tecnicatura: 502755.53, universitario: 628444.41, antiguedad: 50275.55, terciario: 251377.76, grado: 150826.66, capacitacion: 75413.33, perm2: 93009.77, perm4: 232524.43, perm6: 418543.98, perm8: 651068.41, garantia: 0 },
+            2: { basico: 2094818.09, secundario: 146637.05, tecnicatura: 418963.62, universitario: 523704.52, antiguedad: 41896.36, terciario: 209481.81, grado: 146637.27, capacitacion: 83792.72, perm2: 41895.96, perm4: 104739.89, perm6: 188531.80, perm8: 293271.69, garantia: 0 },
+            3: { basico: 1742911.25, secundario: 146637.05, tecnicatura: 348582.25, universitario: 435727.81, antiguedad: 34858.22, terciario: 174291.12, grado: 139432.90, capacitacion: 87145.56, perm2: 35190.68, perm4: 87976.71, perm6: 158358.08, perm8: 246334.79, garantia: 0 },
+            4: { basico: 1449635.33, secundario: 146637.05, tecnicatura: 289927.07, universitario: 362408.83, antiguedad: 28992.71, terciario: 144963.53, grado: 159459.89, capacitacion: 86978.12, perm2: 29327.59, perm4: 73318.98, perm6: 131974.16, perm8: 205293.14, garantia: 70000 },
+            5: { basico: 1206616.96, secundario: 146637.05, tecnicatura: 241323.39, universitario: 301654.24, antiguedad: 24132.34, terciario: 120661.70, grado: 168926.37, capacitacion: 84463.19, perm2: 24301.84, perm4: 60754.59, perm6: 109358.27, perm8: 170112.86, garantia: 100000 },
+            6: { basico: 1005500.58, secundario: 146637.05, tecnicatura: 201100.12, universitario: 251375.15, antiguedad: 20110.01, terciario: 100550.06, grado: 231265.13, capacitacion: 80440.05, perm2: 20111.64, perm4: 50279.09, perm6: 90502.37, perm8: 140781.46, garantia: 150000 },
+            7: { basico: 837926.01, secundario: 146637.05, tecnicatura: 167585.20, universitario: 209481.50, antiguedad: 16758.52, terciario: 83792.60, grado: 226240.02, capacitacion: 83792.60, perm2: 16757.46, perm4: 41893.64, perm6: 75408.56, perm8: 117302.20, garantia: 220000 }
+        };
+
+        function formatMoneda(valor) {
+            return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(valor);
+        }
+
+        function calcularSueldo() {
+            const cat = document.getElementById("categoria").value;
+            const ani_antiguedad = parseInt(document.getElementById("antiguedad").value) || 0;
+            const tipo_titulo = document.getElementById("titulo").value;
+            const perm_anos = document.getElementById("permanencia").value;
+            const checkGrado = document.getElementById("grado").checked;
+            const checkCapacitacion = document.getElementById("capacitacion").checked;
+            const checkSindicato = document.getElementById("sindicato").checked;
+
+            const valores = dataGrilla[cat];
+            
+            // Cálculos individuales para desglose
+            let vBasico = valores.basico;
+            let vAntiguedad = valores.antiguedad * ani_antiguedad;
+            
+            let vTitulo = 0;
+            if (tipo_titulo === "secundario") vTitulo = valores.secundario;
+            else if (tipo_titulo === "terciario") vTitulo = valores.terciario;
+            else if (tipo_titulo === "tecnicatura") vTitulo = valores.tecnicatura;
+            else if (tipo_titulo === "universitario") vTitulo = valores.universitario;
+
+            let vPermanencia = 0;
+            if (perm_anos === "2") vPermanencia = valores.perm2;
+            else if (perm_anos === "4") vPermanencia = valores.perm4;
+            else if (perm_anos === "6") vPermanencia = valores.perm6;
+            else if (perm_anos === "8") vPermanencia = valores.perm8;
+
+            let vGrado = checkGrado ? valores.grado : 0;
+            let vCapacitacion = checkCapacitacion ? valores.capacitacion : 0;
+            let vGarantia = valores.garantia;
+
+            // Suma Total Bruto
+            let bruto = vBasico + vAntiguedad + vTitulo + vPermanencia + vGrado + vCapacitacion + vGarantia;
+
+            // Descuentos para Neto (17% obligatorio + 2% sindicato)
+            let porcentajeDescuento = 0.17;
+            if (checkSindicato) porcentajeDescuento += 0.02;
+            let neto = bruto * (1 - porcentajeDescuento);
+
+            // Mostrar valores en el desglose
+            document.getElementById("lblBasico").innerText = formatMoneda(vBasico);
+            document.getElementById("lblAntiguedad").innerText = formatMoneda(vAntiguedad);
+            document.getElementById("lblTitulo").innerText = formatMoneda(vTitulo);
+            document.getElementById("lblPermanencia").innerText = formatMoneda(vPermanencia);
+            document.getElementById("lblGrado").innerText = formatMoneda(vGrado);
+            document.getElementById("lblCapacitacion").innerText = formatMoneda(vCapacitacion);
+            document.getElementById("lblGarantia").innerText = formatMoneda(vGarantia);
+
+            // Ocultar visualmente la barra de garantía si es $0 (Cat 1, 2, 3)
+            const divGarantia = document.getElementById("divGarantia");
+            if (vGarantia > 0) {
+                divGarantia.className = "flex justify-between text-sm font-bold bg-blue-50 text-blue-700 p-2 rounded-lg border border-blue-100";
+            } else {
+                divGarantia.className = "flex justify-between text-sm text-gray-400 p-2 rounded-lg border border-dashed border-gray-200 bg-gray-50";
+            }
+
+            // Renderizado de Totales
+            document.getElementById("resultadoBruto").innerText = formatMoneda(bruto);
+            document.getElementById("resultadoNeto").innerText = formatMoneda(neto);
+        }
+
+        // Ejecutar cálculo inicial al abrir
+        calcularSueldo();
+    </script>
+</body>
+</html>
